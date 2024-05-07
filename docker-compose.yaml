@@ -2,13 +2,16 @@ version: "3.9"
 
 services:
   directus:
-    image: directus/directus:10.10.7
+    container_name: directus
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8055:8055"
     volumes:
-      - ./database:/directus/database
       - ./uploads:/directus/uploads
       - ./extensions:/directus/extensions
+      - ./config:/directus/config
     environment:
       KEY: "replace-with-random-value"
       SECRET: "replace-with-random-value"
@@ -17,10 +20,11 @@ services:
       DB_CLIENT: "cockroachdb"
       DB_HOST: "database"
       DB_PORT: "26257"
-      DB_DATABASE: "defaultdb"
+      DB_DATABASE: "postgres"
       DB_USER: "root"
       DB_PASSWORD: "root"
       WEBSOCKETS_ENABLED: "true"
+      EXTENSION_SEARCHSYNC_CONFIG_PATH: "config/.searchsync.json"
     depends_on:
       database:
         condition: service_started
@@ -32,3 +36,14 @@ services:
     command: start-single-node --insecure
     volumes:
       - "./.database/:/cockroach-data/crdb:/cockroach/cockroach-data"
+
+  meili:
+    image: getmeili/meilisearch
+    container_name: meili
+    ports:
+      - "7700:7700"
+    volumes:
+      - "./.database/meili_data:/meili_data"
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: "master"

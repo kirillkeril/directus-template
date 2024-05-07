@@ -1,0 +1,27 @@
+{
+  "server": {
+    "type": "meilisearch",
+    "host": "http://search:7700/",
+    "key": "master"
+  },
+  "batchLimit": 100,
+  "reindexOnStart": false,
+  "collections": {
+    "products": {
+      "filter": {
+        "status": "published",
+        "stock": "inStock"
+      },
+      "fields": ["title", "image.id", "category.title", "brand.title", "tags", "description", "price", "rating"]
+    },
+    "posts": {
+      "indexName": "blog_posts",
+      "collectionField": "_collection",
+
+      "filter": {
+        "status": "published"
+      },
+      "fields": ["title", "teaser", "body", "thumbnail.id"]
+    }
+  }
+}
